@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>衣物清潔品類 全通路銷售洞察 Dashboard | invosData</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Noto Sans TC', 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: #F5F6F8; color: #333; }
+.header { background: linear-gradient(135deg, #091429 0%, #1a2642 100%); padding: 28px 32px; border-radius: 0 0 20px 20px; margin-bottom: 24px; }
+.header-inner { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.logo { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #00DFA6, #B867FD); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; font-weight: 700; }
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header h1 { font-size: 22px; font-weight: 700; color: #fff; margin: 0; }
+.header p { font-size: 12px; color: #8DECCA; margin-top: 2px; }
+.tags { display: flex; gap: 8px; }
+.tag { font-size: 11px; padding: 5px 12px; border-radius: 6px; font-weight: 600; }
+.tag-green { background: rgba(0,223,166,0.15); color: #00DFA6; }
+.tag-purple { background: rgba(184,103,253,0.15); color: #B867FD; }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px 40px; }
+
+/* KPI Growth Cards */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi-card { background: #fff; border-radius: 12px; padding: 16px 18px; border: 1px solid #eee; box-shadow: 0 1px 4px rgba(0,0,0,0.04); text-align: center; }
+.kpi-label { font-size: 11px; color: #888; margin-bottom: 6px; }
+.kpi-value { font-size: 26px; font-weight: 700; }
+.kpi-value.positive { color: #00B386; }
+.kpi-value.negative { color: #E24A42; }
+.kpi-sub { font-size: 10px; color: #aaa; margin-top: 4px; }
+.kpi-bar-wrap { margin-top: 10px; }
+.kpi-bar-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 10px; }
+.kpi-bar-label { width: 32px; text-align: right; color: #888; font-weight: 600; }
+.kpi-bar { height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 9px; color: #fff; font-weight: 600; }
+
+/* Cards */
+.card { background: #fff; border-radius: 14px; padding: 20px 22px; border: 1px solid #eee; box-shadow: 0 1px 6px rgba(0,0,0,0.04); margin-bottom: 20px; }
+.card-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+.card-title { font-size: 14px; font-weight: 700; color: #1a1a2e; margin: 0; }
+.card-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.card-sub { font-size: 11px; color: #999; margin: 0 0 14px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.chart-wrap { position: relative; width: 100%; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 11px; }
+thead tr { background: #F8F9FA; }
+th { padding: 6px 8px; text-align: left; color: #888; font-weight: 600; border-bottom: 1px solid #eee; }
+td { padding: 7px 8px; border-bottom: 1px solid #f5f5f5; }
+.rank { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; font-size: 10px; font-weight: 700; color: #fff; }
+.rank-1 { background: #00DFA6; }
+.rank-2 { background: #B867FD; }
+.rank-3 { background: #00D0E3; }
+.rank-n { background: #C8CCD0; }
+.ch-label { font-size: 12px; font-weight: 700; color: #00B386; margin-bottom: 8px; padding: 4px 10px; background: rgba(0,223,166,0.08); border-radius: 6px; display: inline-block; }
+.note { font-size: 10px; color: #bbb; margin-top: 6px; font-style: italic; }
+.blur-row td { filter: blur(5px); -webkit-filter: blur(5px); user-select: none; pointer-events: none; }
+.cta-box { background: linear-gradient(135deg, #f0faf6 0%, #f4f0ff 100%); border: 1px solid #e0e0e0; border-radius: 14px; padding: 28px 32px; text-align: center; margin: 24px 0 8px; }
+.cta-box p { font-size: 15px; color: #444; line-height: 1.7; margin: 0 0 16px; }
+.cta-btn { display: inline-block; padding: 10px 28px; background: linear-gradient(135deg, #00DFA6, #B867FD); color: #fff; font-size: 14px; font-weight: 700; border-radius: 8px; text-decoration: none; letter-spacing: 0.5px; }
+.footer { text-align: center; padding: 24px 0 8px; font-size: 11px; color: #bbb; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">i</div>
+      <div>
+        <h1>衣物清潔品類 全通路銷售洞察 Dashboard</h1>
+        <p>invosData 實購數據驗證平台 | 2025.01 – 2025.12</p>
+      </div>
+    </div>
+    <div class="tags">
+      <span class="tag tag-green">品類：衣物清潔</span>
+      <span class="tag tag-purple">數據：相對指數</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Section 1: KPI Growth Rates -->
+  <div class="kpi-grid">
+    <div class="kpi-card" style="border-left:4px solid #00DFA6">
+      <div class="kpi-label">銷售額成長率</div>
+      <div class="kpi-value positive">+5.18%</div>
+      <div class="kpi-sub">YoY 2025 vs 2024</div>
+      <div class="kpi-bar-wrap">
+        <div class="kpi-bar-row"><span class="kpi-bar-label">2025</span><div class="kpi-bar" style="width:80%;background:#00DFA6;">Index 105.2</div></div>
+        <div class="kpi-bar-row"><span class="kpi-bar-label">2024</span><div class="kpi-bar" style="width:76%;background:#8DECCA;">Index 100</div></div>
+      </div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #E24A42">
+      <div class="kpi-label">人流成長率</div>
+      <div class="kpi-value negative">-1.44%</div>
+      <div class="kpi-sub">YoY 2025 vs 2024</div>
+      <div class="kpi-bar-wrap">
+        <div class="kpi-bar-row"><span class="kpi-bar-label">2025</span><div class="kpi-bar" style="width:74%;background:#EE716E;">Index 98.6</div></div>
+        <div class="kpi-bar-row"><span class="kpi-bar-label">2024</span><div class="kpi-bar" style="width:76%;background:#FA88C5;">Index 100</div></div>
+      </div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #B867FD">
+      <div class="kpi-label">人均次成長率</div>
+      <div class="kpi-value positive">+1.33%</div>
+      <div class="kpi-sub">YoY 2025 vs 2024</div>
+      <div class="kpi-bar-wrap">
+        <div class="kpi-bar-row"><span class="kpi-bar-label">2025</span><div class="kpi-bar" style="width:78%;background:#B867FD;">Index 101.3</div></div>
+        <div class="kpi-bar-row"><span class="kpi-bar-label">2024</span><div class="kpi-bar" style="width:76%;background:#D5A6FE;">Index 100</div></div>
+      </div>
+    </div>
+    <div class="kpi-card" style="border-left:4px solid #00D0E3">
+      <div class="kpi-label">單次金成長率</div>
+      <div class="kpi-value positive">+5.32%</div>
+      <div class="kpi-sub">YoY 2025 vs 2024</div>
+      <div class="kpi-bar-wrap">
+        <div class="kpi-bar-row"><span class="kpi-bar-label">2025</span><div class="kpi-bar" style="width:80%;background:#00D0E3;">Index 105.3</div></div>
+        <div class="kpi-bar-row"><span class="kpi-bar-label">2024</span><div class="kpi-bar" style="width:76%;background:#88E4EE;">Index 100</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Monthly Sales Index Trend -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">一、逐月銷售指數趨勢</h3>
+      <span class="card-tag" style="background:rgba(0,223,166,0.1);color:#00B386">趨勢</span>
+    </div>
+    <p class="card-sub">月均 = 100，反映各月銷售相對強弱（2025/01 – 2025/12）</p>
+    <div class="chart-wrap"><canvas id="chartTrend"></canvas></div>
+    <p class="note">* 銷售指數以全年月均值為基準 100 換算，5月與11月為促銷旺季高峰</p>
+  </div>
+
+  <!-- Section 3: Channel Structure (Pie Charts) -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">三、通路銷售佔比</h3>
+        <span class="card-tag" style="background:rgba(122,155,228,0.12);color:#3A5EC8">通路</span>
+      </div>
+      <p class="card-sub">各通路銷售金額佔全通路比例（%）</p>
+      <div class="chart-wrap"><canvas id="chartChannelShare"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">三、通路滲透率</h3>
+        <span class="card-tag" style="background:rgba(126,201,151,0.12);color:#38AA7C">滲透</span>
+      </div>
+      <p class="card-sub">品類購買者曾在該通路購買的比例（%）</p>
+      <div class="chart-wrap"><canvas id="chartChannelPen"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Section 4: YoY Index Comparison -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">二、年度關鍵指標 YoY 變化</h3>
+      <span class="card-tag" style="background:rgba(0,208,227,0.1);color:#00A8B8">對比</span>
+    </div>
+    <p class="card-sub">以 2024 年為基準（Index = 100），2025 年各指標相對變化</p>
+    <div class="chart-wrap"><canvas id="chartYoY"></canvas></div>
+  </div>
+
+  <!-- Section 5: Hot Products by Channel -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">四、主要通路熱銷商品</h3>
+      <span class="card-tag" style="background:rgba(238,113,110,0.12);color:#E24A42">熱銷</span>
+    </div>
+    <p class="card-sub">Top 3 通路下熱銷商品（依購買人數由大到小排序）</p>
+    <div class="grid-3">
+      <div>
+        <div class="ch-label">好市多</div>
+        <table>
+          <thead><tr><th style="width:28px">#</th><th>品項</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank rank-1">1</span></td><td>LENOR 衣物芳香豆</td></tr>
+            <tr><td><span class="rank rank-2">2</span></td><td>橘子工坊 除臭洗衣精</td></tr>
+            <tr><td><span class="rank rank-3">3</span></td><td>A&H 洗衣精 5.91L</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">4</span></td><td>蘭諾 抗黃芳香豆</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">5</span></td><td>PERSIL 洗衣膠囊</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">6</span></td><td>OH 洗衣膠囊</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">7</span></td><td>KS 超濃縮洗衣精</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">8</span></td><td>噴槍型洗衣凝露</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">9</span></td><td>FLAIR 衣物柔軟精</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">10</span></td><td>寶瀅 洗衣凝露</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">11</span></td><td>ARIEL 4D 洗衣膠囊</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">12</span></td><td>ARIEL 補充包</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ch-label">momo 購物網</div>
+        <table>
+          <thead><tr><th style="width:28px">#</th><th>品項</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank rank-1">1</span></td><td>白鴿 天然抗病毒/抗菌洗衣精補充包</td></tr>
+            <tr><td><span class="rank rank-2">2</span></td><td>ARIEL 超濃縮抗菌抗臭洗衣精</td></tr>
+            <tr><td><span class="rank rank-3">3</span></td><td>Persil 寶瀅 深層酵解濃縮洗衣精補充包</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">4</span></td><td>白蘭 香氛洗衣球 超值組 172 顆</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">5</span></td><td>一匙靈 制菌/亮彩/淨柔超濃縮洗衣精</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">6</span></td><td>一匙靈 ATTACK 抗菌 EX 洗衣精補充包</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">7</span></td><td>ARIEL 4D 抗菌洗衣膠囊（雙 11 限定）</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">8</span></td><td>ARIEL 超濃縮抗菌抗臭洗衣精 1030ml</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">9</span></td><td>Lenor 蘭諾 全新衣物芳香豆</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">10</span></td><td>ARIEL 極淨進化 4D 抗菌洗衣膠囊</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">11</span></td><td>ARIEL 超濃縮抗菌抗臭洗衣精 1+3 組</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">12</span></td><td>ARIEL 4D 抗菌洗衣膠囊 60 顆×4 包</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="ch-label">Shopee 蝦皮購物</div>
+        <table>
+          <thead><tr><th style="width:28px">#</th><th>品項</th></tr></thead>
+          <tbody>
+            <tr><td><span class="rank rank-1">1</span></td><td>一匙靈 抗菌 EX 洗衣精補充包 1.5kg</td></tr>
+            <tr><td><span class="rank rank-2">2</span></td><td>香氛洗衣球 33 入（海洋/薰衣草/櫻花）</td></tr>
+            <tr><td><span class="rank rank-3">3</span></td><td>妙管家 濃縮洗衣精補充包 2000g 抗菌</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">4</span></td><td>毛寶 PM2.5 洗衣精補充包 2000g</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">5</span></td><td>一匙靈 抗菌 EX 洗衣精補充包（5 入組）</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">6</span></td><td>古寶 神奇檸檬衣物去污棒 150g</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">7</span></td><td>P&G 衣物芳香豆 香香豆/香香粒</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">8</span></td><td>妙管家 濃縮洗衣精補充包 2000g</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">9</span></td><td>P&G 4D 洗衣球 Ariel/Bold 洗衣凝膠球</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">10</span></td><td>P&G Ariel 超濃縮抗菌洗衣精 690/720g</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">11</span></td><td>P&G 4D 洗衣球 Ariel/Bold 凝膠球</td></tr>
+            <tr class="blur-row"><td><span class="rank rank-n">12</span></td><td>P&G 4D 洗衣球 洗衣膠球 39/36/33 入</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p class="note">* 排序依購買人數由大到小；數據涵蓋區間 2025/01/01 – 2025/12/31</p>
+  </div>
+
+  <!-- CTA Section -->
+  <div class="cta-box">
+    <p style="font-size:17px;font-weight:700;color:#1a1a2e;margin-bottom:8px;">看完市場總覽，就足以品牌下通路決策了嗎？</p>
+    <p>想了解更多品牌競爭定位、通路經營策略、消費者輪廓等深度指標，<br>歡迎與我們的數據顧問聯繫，預約 Demo 或洽詢完整報告內容。</p>
+    <a class="cta-btn" href="mailto:contact@invosdata.com">預約 Demo ／ 聯繫顧問</a>
+  </div>
+
+  <div class="footer">invosData 實購數據驗證平台 | 數據涵蓋區間：2025/01/01 – 2025/12/31 | 所有數值均為相對指標，不含絕對金額</div>
+</div>
+
+<script>
+(function() {
+"use strict";
+
+// =====================================================
+// 發票存摺配色 — 僅用於兩個 Doughnut 圖表
+// 色序：青 → 藍 → 綠 → 紫 → 紅 → 粉 → 橘 → 黃綠 → 黃 → 灰
+// =====================================================
+var PAL10 = ["#91DDF0","#7A9BE4","#7EC997","#B78ED8","#EE716E","#FA88C5","#F6AA5E","#C6D86A","#FFDD5E","#C8CCD0"];
+
+Chart.defaults.font.family = "'Noto Sans TC','Segoe UI','Microsoft JhengHei',sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.pointStyleWidth = 10;
+
+// ==========================================
+// Chart 1: Monthly Sales Index (Line + Area) — invosData 品牌色
+// ==========================================
+var salesIndex = [87.8, 87.5, 97.3, 98.2, 128.9, 82.8, 89.5, 79.2, 90.7, 117.6, 145.7, 94.6];
+var months = ["2025/01","2025/02","2025/03","2025/04","2025/05","2025/06","2025/07","2025/08","2025/09","2025/10","2025/11","2025/12"];
+
+new Chart(document.getElementById("chartTrend"), {
+  type: "line",
+  data: {
+    labels: months,
+    datasets: [{
+      label: "銷售指數",
+      data: salesIndex,
+      borderColor: "#00DFA6",
+      backgroundColor: "rgba(0,223,166,0.12)",
+      borderWidth: 3,
+      pointRadius: 6,
+      pointBackgroundColor: "#00DFA6",
+      pointBorderColor: "#fff",
+      pointBorderWidth: 2,
+      fill: true,
+      tension: 0.35
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: function(ctx) { return "銷售指數：" + ctx.raw; } } }
+    },
+    scales: {
+      y: { min: 60, max: 160, grid: { color: "#f0f0f0" }, ticks: { callback: function(v) { return v; } } },
+      x: { grid: { display: false } }
+    }
+  },
+  plugins: [{
+    afterDatasetsDraw: function(chart) {
+      var ctx = chart.ctx;
+      var meta = chart.getDatasetMeta(0);
+      ctx.font = "bold 11px 'Noto Sans TC', sans-serif";
+      ctx.fillStyle = "#333";
+      ctx.textAlign = "center";
+      meta.data.forEach(function(point, i) {
+        ctx.fillText(salesIndex[i], point.x, point.y - 12);
+      });
+    }
+  }]
+});
+
+// ==========================================
+// Chart 2: Channel Sales Share (Doughnut) — 發票存摺 10 色
+// ==========================================
+var channelShareLabels = ["好市多","momo購物網","Shopee蝦皮購物","全聯","酷澎","家樂福","寶雅","大全聯","PChome","其他"];
+var channelShareData = [41.6, 14.1, 11.4, 11.0, 8.0, 4.6, 3.2, 2.5, 2.0, 1.6];
+
+new Chart(document.getElementById("chartChannelShare"), {
+  type: "doughnut",
+  data: {
+    labels: channelShareLabels,
+    datasets: [{
+      data: channelShareData,
+      backgroundColor: PAL10,
+      borderWidth: 2,
+      borderColor: "#fff"
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: "right", labels: { font: { size: 10 }, boxWidth: 12, padding: 6 } },
+      tooltip: { callbacks: { label: function(ctx) { return ctx.label + "：" + ctx.raw + "%"; } } }
+    }
+  }
+});
+
+// ==========================================
+// Chart 3: Channel Penetration (Doughnut) — 發票存摺 10 色
+// ==========================================
+var channelPenLabels = ["全聯","好市多","Shopee蝦皮購物","家樂福","momo購物網","酷澎","寶雅","大全聯","小北百貨","其他"];
+var channelPenData = [22.1, 18.6, 13.5, 11.0, 8.2, 7.9, 6.3, 4.5, 4.3, 3.6];
+
+new Chart(document.getElementById("chartChannelPen"), {
+  type: "doughnut",
+  data: {
+    labels: channelPenLabels,
+    datasets: [{
+      data: channelPenData,
+      backgroundColor: PAL10,
+      borderWidth: 2,
+      borderColor: "#fff"
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: "right", labels: { font: { size: 10 }, boxWidth: 12, padding: 6 } },
+      tooltip: { callbacks: { label: function(ctx) { return ctx.label + "：" + ctx.raw + "%"; } } }
+    }
+  }
+});
+
+// ==========================================
+// Chart 4: YoY Index Comparison (Grouped Bar) — invosData 品牌色
+// ==========================================
+var yoyLabels = ["銷售額","購買人數","人均次數","單次金額"];
+var yoy2024 = [100, 100, 100, 100];
+var yoy2025 = [105.18, 98.56, 101.33, 105.32];
+
+new Chart(document.getElementById("chartYoY"), {
+  type: "bar",
+  data: {
+    labels: yoyLabels,
+    datasets: [
+      { label: "2024（基準 = 100）", data: yoy2024, backgroundColor: "#8DECCA", borderRadius: 4 },
+      { label: "2025", data: yoy2025, backgroundColor: "#00DFA6", borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: { min: 95, max: 110, grid: { color: "#f0f0f0" }, ticks: { callback: function(v) { return v; } } },
+      x: { grid: { display: false } }
+    },
+    plugins: {
+      legend: { position: "top", labels: { font: { size: 11 }, boxWidth: 14 } },
+      tooltip: {
+        callbacks: {
+          label: function(ctx) {
+            var diff = (ctx.raw - 100).toFixed(2);
+            var sign = ctx.raw >= 100 ? "+" : "";
+            return ctx.dataset.label + "：" + ctx.raw + "（" + sign + diff + "%）";
+          }
+        }
+      }
+    }
+  },
+  plugins: [{
+    afterDatasetsDraw: function(chart) {
+      var ctx = chart.ctx;
+      chart.data.datasets.forEach(function(ds, di) {
+        var meta = chart.getDatasetMeta(di);
+        meta.data.forEach(function(bar, i) {
+          if (di === 1) {
+            var val = ds.data[i];
+            var diff = (val - 100).toFixed(2);
+            var sign = val >= 100 ? "+" : "";
+            ctx.font = "bold 10px 'Noto Sans TC', sans-serif";
+            ctx.fillStyle = val >= 100 ? "#00B386" : "#E24A42";
+            ctx.textAlign = "center";
+            ctx.fillText(sign + diff + "%", bar.x, bar.y - 6);
+          }
+        });
+      });
+    }
+  }]
+});
+
+})();
+</script>
+</body>
+</html>
